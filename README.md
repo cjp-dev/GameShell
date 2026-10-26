@@ -18,6 +18,8 @@ The GUI is described in [docs/general-game-gui-specification.md](docs/general-ga
 | `MoveHistoryPanel` | The moves in paired rows, the latest move highlighted, scrolled into view |
 | `gameshell.css` | The shared look (served as `_content/GameShell/gameshell.css`) |
 | `gameshell.js` | Shortcut listener, menu alignment, history scrolling, text file open and download (`_content/GameShell/gameshell.js`) |
+| `DocsViewer`, `BrainDocs` | The in-app documentation: the game's `docs/brain` Markdown (README as front page, chapters from its links) with contents, previous/next links, formulas and diagrams |
+| `docs.css`, `docs.js` | The documentation's look and its KaTeX/Mermaid rendering (`_content/GameShell/docs.css`, loaded by `DocsViewer`) |
 
 Each game keeps its own board, dialogs, engine and view models. The view models live in the game's
 platform-neutral `.App` project (shared with its WPF version), so GameShell never references them: the game
@@ -66,6 +68,32 @@ Then build the page from the components (abridged):
     </SidePanels>
 </ShellLayout>
 ```
+
+### The documentation pages
+
+Register the docs in `Program.cs` (after the `HttpClient`), route to the viewer from a small page, and link its
+stylesheet in `index.html` (`<link rel="stylesheet" href="_content/GameShell/docs.css" />`):
+
+```csharp
+builder.Services.AddBrainDocs("The Connect 4 brain", "Connect 4", "https://github.com/cjp-dev/Connect-4/blob/main/docs/brain/");
+```
+
+```razor
+@page "/docs"
+@page "/docs/{Slug}"
+
+<DocsViewer Slug="@Slug" />
+
+@code {
+    [Parameter]
+    public string? Slug { get; set; }
+}
+```
+
+The game's build copies `docs/brain` to `wwwroot/content/brain`, where `BrainDocs` reads it. Menu items open a chapter
+with `BrainDocs.PageRoute("13-gui-and-settings")`.
+
+### Styles
 
 The game's stylesheet adds the board, the player colour dots used by `PlayerInfo.GlyphClass` (e.g. `.red-dot`)
 and its dialogs. The board size is set with CSS variables; see the top of `gameshell.css`.
