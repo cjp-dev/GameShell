@@ -581,16 +581,18 @@ Use this step-by-step engineering checklist when constructing an identical GUI f
 | **Move history** | `src/GameShell/MoveHistoryPanel.razor` | Paired rows, latest-move highlight, auto-scroll, `N moves` header |
 | **Styles** | `src/GameShell/wwwroot/gameshell.css` | The shared look; board size through CSS variables |
 | **Browser helpers** | `src/GameShell/wwwroot/gameshell.js` | Shortcut listener, menu alignment, history scrolling, text file open / download |
+| **Dialogs** | `src/GameShell/Dialogs/ShellDialogs.cs`, `DialogHost.razor` | One modal dialog at a time: title, message, About picture, text box, buttons (first = Enter, last = Escape) and a body slot for the game's Settings form |
+| **Documentation** | `src/GameShell/Docs/BrainDocs.cs`, `DocsViewer.razor`, `wwwroot/docs.css`, `wwwroot/docs.js` | The in-app `/docs` viewer for the game's `docs/brain` Markdown, with formulas (KaTeX) and diagrams (Mermaid) |
 
 ### Games (each a separate repository, GameShell as a git submodule)
 | Game | Web project | Game-specific parts |
 |---|---|---|
-| **Checkers .NET** | `src/Checkers.Web` | Board (selection, captures, PDN numbers), dialogs, engine worker |
-| **Connect 4** | `Connect4.Net/Connect4.Web` | Board (drop animation, board styles), dialogs, engine worker |
-| **Gomoku .NET** | `src/Gomoku.Web` | SVG board (themes, Renju markers), dialogs, threaded engine host |
-| **Stello** | `Stello.Net/Stello.Web` | Board (flip animation, board styles), dialogs, opening-book learning |
+| **Checkers .NET** | `src/Checkers.Web` | Board (selection, captures, PDN numbers, board styles), Settings form, engine worker |
+| **Connect 4** | `Connect4.Net/Connect4.Web` | Board (drop animation, board styles), Settings form, engine worker |
+| **Gomoku .NET** | `src/Gomoku.Web` | SVG board (themes, Renju markers), Settings form, threaded engine host |
+| **Stello** | `Stello.Net/Stello.Web` | Board (flip animation, board styles), Settings form, opening-book learning |
 
-The platform-neutral presentation logic (`MainViewModel`, `AnalysisViewModel`, `SettingsViewModel`) stays in each game's `.App` project, shared with its WPF desktop version.
+Each game also keeps its menus, its dialog service (the App layer's `IDialogService` on top of `ShellDialogs`) and its `/docs` route page. The platform-neutral presentation logic (`MainViewModel`, `AnalysisViewModel`, `SettingsViewModel`) stays in each game's `.App` project, shared with its WPF desktop version.
 
 ---
 

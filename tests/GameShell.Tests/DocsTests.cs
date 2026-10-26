@@ -79,6 +79,18 @@ public sealed class BrainDocsTests
     }
 
     [Fact]
+    public async Task Formula_InAHeading_KeepsItsBraces()
+    {
+        var files = DocsFixture.Files();
+        files["content/brain/01-overview.md"] = "# 01 – Overview\n\n### Natural Feel Delay ($250\\text{ ms}$)\n\nText {#not-an-id}";
+        DocsPage page = (await DocsFixture.Create(new FakeFiles(files)).GetPageAsync("01-overview"))!;
+
+        Assert.Contains("250\\text{ ms}", page.Html);
+        Assert.DoesNotContain(" ms=\"\"", page.Html);
+        Assert.Contains("{#not-an-id}", page.Html);
+    }
+
+    [Fact]
     public async Task Page_WithoutHeading_IsNamedAfterTheDocs()
     {
         DocsPage page = (await DocsFixture.Create(_files).GetPageAsync("appendix-a-engine-comparison-report"))!;

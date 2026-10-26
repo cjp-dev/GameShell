@@ -22,7 +22,7 @@ The GUI is described in [docs/general-game-gui-specification.md](docs/general-ga
 | `DocsViewer`, `BrainDocs` | The in-app documentation: the game's `docs/brain` Markdown (README as front page, chapters from its links) with contents, previous/next links, formulas and diagrams |
 | `docs.css`, `docs.js` | The documentation's look and its KaTeX/Mermaid rendering (`_content/GameShell/docs.css`, loaded by `DocsViewer`) |
 
-Each game keeps its own board, dialogs, engine and view models. The view models live in the game's
+Each game keeps its own board, menus, Settings form and dialog service, engine and view models. The view models live in the game's
 platform-neutral `.App` project (shared with its WPF version), so GameShell never references them: the game
 passes plain values, commands and small adapters.
 
@@ -113,7 +113,7 @@ with `BrainDocs.PageRoute("13-gui-and-settings")`.
 ### Styles
 
 The game's stylesheet adds the board, the player colour dots used by `PlayerInfo.GlyphClass` (e.g. `.red-dot`)
-and its dialogs. The board size is set with CSS variables; see the top of `gameshell.css`.
+and its Settings form. The board size is set with CSS variables; see the top of `gameshell.css`.
 
 In the game's deploy workflow, check out the submodule and redeploy when it changes:
 

@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using Markdig;
 using Markdig.Extensions.AutoIdentifiers;
+using Markdig.Extensions.GenericAttributes;
 using Markdig.Renderers.Html;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
@@ -18,11 +19,20 @@ public sealed partial class BrainDocs(HttpClient http, BrainDocsOptions options)
     private const string Route = "docs";
 
     // GitHub heading ids, so links such as "05-evaluation.md#threats" work; the docs have no raw HTML.
-    private static readonly MarkdownPipeline Pipeline = new MarkdownPipelineBuilder()
-        .UseAutoIdentifiers(AutoIdentifierOptions.GitHub)
-        .UseAdvancedExtensions()
-        .DisableHtml()
-        .Build();
+    private static readonly MarkdownPipeline Pipeline = CreatePipeline();
+
+    private static MarkdownPipeline CreatePipeline()
+    {
+        MarkdownPipelineBuilder builder = new MarkdownPipelineBuilder()
+            .UseAutoIdentifiers(AutoIdentifierOptions.GitHub)
+            .UseAdvancedExtensions()
+            .DisableHtml();
+
+        // The docs are written for GitHub, which has no "{#id .class}" attributes. Markdig's would read the braces of
+        // a formula as attributes, e.g. "### Delay ($250\text{ ms}$)" became "Delay ($250\text" with an attribute ms.
+        builder.Extensions.RemoveAll(extension => extension is GenericAttributesExtension);
+        return builder.Build();
+    }
 
     private readonly Dictionary<string, Task<DocsPage>> _pages = [];
     private Task<string>? _readme;
