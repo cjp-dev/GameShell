@@ -1,0 +1,79 @@
+@* STATUS header with badges, the turn message, the two player cards and the quick action buttons. *@
+<section class="panel status-panel" role="status" aria-label="Game Status">
+    <div class="panel-header">
+        <h2 class="@(IsModified ? "status-modified" : null)">STATUS</h2>
+        <span class="mode-badge">@VariantBadge</span>
+        @if (SettingBadge is not null)
+        {
+            <span class="setting-text">@SettingBadge</span>
+        }
+    </div>
+
+    <div class="status-message">
+        <p class="status-main">@StatusText</p>
+        @if (IsThinking)
+        {
+            <div class="thinking-bar" role="progressbar" aria-label="AI Thinking">
+                <div class="thinking-progress"></div>
+            </div>
+        }
+    </div>
+
+    <div class="player-cards">
+        <PlayerCard Player="First" />
+        <PlayerCard Player="Second" />
+    </div>
+
+    <div class="action-buttons">
+        <button class="btn btn-secondary" title="Undo (Ctrl+Z)" disabled="@(!CanUndo)" @onclick="() => ShellCommands.RunAsync(Undo)">Undo</button>
+        <button class="btn btn-secondary" title="Redo (Ctrl+Y)" disabled="@(!CanRedo)" @onclick="() => ShellCommands.RunAsync(Redo)">Redo</button>
+        @if (MoveNow is not null)
+        {
+            <button class="btn btn-warning" title="Move Now (Ctrl+M)" disabled="@(!CanMoveNow)" @onclick="() => ShellCommands.RunAsync(MoveNow)">Move Now</button>
+        }
+    </div>
+</section>
+
+@code {
+    /// <summary>Shows STATUS in crimson: the game was changed against the computer (undo, switch sides, ...).</summary>
+    [Parameter]
+    public bool IsModified { get; set; }
+
+    [Parameter, EditorRequired]
+    public string VariantBadge { get; set; } = "";
+
+    /// <summary>The computer's thinking limit, e.g. "5s / move"; null hides it (two-player games).</summary>
+    [Parameter]
+    public string? SettingBadge { get; set; }
+
+    [Parameter]
+    public string StatusText { get; set; } = "";
+
+    [Parameter]
+    public bool IsThinking { get; set; }
+
+    [Parameter, EditorRequired]
+    public PlayerInfo First { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public PlayerInfo Second { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public ICommand Undo { get; set; } = default!;
+
+    [Parameter]
+    public bool CanUndo { get; set; }
+
+    [Parameter, EditorRequired]
+    public ICommand Redo { get; set; } = default!;
+
+    [Parameter]
+    public bool CanRedo { get; set; }
+
+    /// <summary>The Move Now command; null hides the button (two-player games).</summary>
+    [Parameter]
+    public ICommand? MoveNow { get; set; }
+
+    [Parameter]
+    public bool CanMoveNow { get; set; }
+}

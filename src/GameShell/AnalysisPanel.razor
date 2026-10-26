@@ -1,0 +1,77 @@
+@implements IDisposable
+
+<aside class="panel analysis-panel" aria-label="Analysis">
+    <h2>ANALYSIS</h2>
+    <dl class="analysis-grid">
+        <dt>Move:</dt>
+        <dd>@Show(Analysis.Move)</dd>
+
+        <dt>Depth:</dt>
+        <dd>@Show(Analysis.Depth)</dd>
+
+        <dt>Score:</dt>
+        <dd>@Show(Analysis.Score)</dd>
+
+        <dt>Best move:</dt>
+        <dd>@Show(Analysis.BestMove)</dd>
+
+        <dt>Nodes:</dt>
+        <dd>@Show(Analysis.Nodes)</dd>
+
+        <dt>Speed:</dt>
+        <dd>@Show(Analysis.Speed)</dd>
+
+        <dt>Time:</dt>
+        <dd>@Show(Analysis.Time)</dd>
+    </dl>
+</aside>
+
+@code {
+    private IAnalysisView? _subscribed;
+    private bool _renderPending;
+
+    [Parameter, EditorRequired]
+    public IAnalysisView Analysis { get; set; } = default!;
+
+    protected override void OnParametersSet()
+    {
+        if (!ReferenceEquals(Analysis, _subscribed))
+        {
+            if (_subscribed is not null)
+            {
+                _subscribed.Updated -= OnUpdated;
+            }
+
+            Analysis.Updated += OnUpdated;
+            _subscribed = Analysis;
+        }
+    }
+
+    // An empty field shows a dash, the same in every game.
+    private static string Show(string value) => string.IsNullOrEmpty(value) ? "-" : value;
+
+    // The engine reports many times a second; render at most once per frame.
+    private void OnUpdated()
+    {
+        if (_renderPending)
+        {
+            return;
+        }
+
+        _renderPending = true;
+        _ = InvokeAsync(async () =>
+        {
+            await Task.Yield();
+            _renderPending = false;
+            StateHasChanged();
+        });
+    }
+
+    public void Dispose()
+    {
+        if (_subscribed is not null)
+        {
+            _subscribed.Updated -= OnUpdated;
+        }
+    }
+}

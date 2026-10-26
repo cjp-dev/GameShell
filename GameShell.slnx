@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/GameShell/GameShell.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/GameShell.Tests/GameShell.Tests.csproj" />
+  </Folder>
+</Solution>

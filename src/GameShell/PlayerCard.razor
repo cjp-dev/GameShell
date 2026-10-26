@@ -1,0 +1,20 @@
+<div class="player-card @(Player.IsActive ? "active-turn" : null)">
+    <div class="player-header @(Player.Clock is null ? "no-clock" : null)">
+        <div class="player-title">
+            <span class="piece-dot @Player.GlyphClass"></span>
+            <span class="player-name">@Player.Name</span>
+        </div>
+        @if (Player.Clock is not null)
+        {
+            <span class="player-clock">@Player.Clock</span>
+        }
+    </div>
+    <span class="player-role">@Player.Role</span>
+    <div class="player-metric">@Player.Metric</div>
+    <span class="player-detail">@Player.Detail</span>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public PlayerInfo Player { get; set; } = default!;
+}
