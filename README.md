@@ -18,6 +18,7 @@ The GUI is described in [docs/general-game-gui-specification.md](docs/general-ga
 | `MoveHistoryPanel` | The moves in paired rows, the latest move highlighted, scrolled into view |
 | `gameshell.css` | The shared look (served as `_content/GameShell/gameshell.css`) |
 | `gameshell.js` | Shortcut listener, menu alignment, history scrolling, text file open and download (`_content/GameShell/gameshell.js`) |
+| `ShellDialogs`, `DialogHost` | Modal dialogs one at a time: title, message, About picture, text box, buttons (first = Enter, last = Escape), and a `Body` slot for the game's own content such as its Settings form |
 | `DocsViewer`, `BrainDocs` | The in-app documentation: the game's `docs/brain` Markdown (README as front page, chapters from its links) with contents, previous/next links, formulas and diagrams |
 | `docs.css`, `docs.js` | The documentation's look and its KaTeX/Mermaid rendering (`_content/GameShell/docs.css`, loaded by `DocsViewer`) |
 
@@ -68,6 +69,22 @@ Then build the page from the components (abridged):
     </SidePanels>
 </ShellLayout>
 ```
+
+### Dialogs
+
+Register `ShellDialogs` in `Program.cs` (`builder.Services.AddSingleton<ShellDialogs>();`), put `<DialogHost />` once in
+the layout after `@Body`, and make the page inert while a dialog is open (`Inert="@(Dialogs.Current is not null)"`
+with `@inject ShellDialogs Dialogs`). The game's own dialog service, which implements its App layer's dialog interface,
+builds the requests:
+
+```csharp
+int button = await dialogs.ShowAsync(new DialogRequest { Title = "Connect 4", Message = message, Buttons = ["Yes", "No"] });
+
+var settings = new SettingsViewModel(current);
+int ok = await dialogs.ShowAsync(new DialogRequest { Title = "Settings", Body = SettingsForm.For(settings), Buttons = ["OK", "Cancel"] });
+```
+
+A body that changes (such as a form) should be a component, so it re-renders itself as the user edits it.
 
 ### The documentation pages
 
