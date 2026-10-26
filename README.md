@@ -76,7 +76,9 @@ In the game's deploy workflow, check out the submodule and redeploy when it chan
 on:
   push:
     paths:
+      - 'external/GameShell'      # the submodule pointer itself (updating GameShell)
       - 'external/GameShell/**'
+      - '.gitmodules'
       # ...the game's own paths
 jobs:
   build-and-deploy:
