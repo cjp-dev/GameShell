@@ -582,7 +582,7 @@ Use this step-by-step engineering checklist when constructing an identical GUI f
 | **Styles** | `src/GameShell/wwwroot/gameshell.css` | The shared look; board size through CSS variables |
 | **Browser helpers** | `src/GameShell/wwwroot/gameshell.js` | Shortcut listener, menu alignment, history scrolling, text file open / download |
 | **Dialogs** | `src/GameShell/Dialogs/ShellDialogs.cs`, `DialogHost.razor` | One modal dialog at a time: title, message, About picture, text box, buttons (first = Enter, last = Escape) and a body slot for the game's Settings form |
-| **Documentation** | `src/GameShell/Docs/BrainDocs.cs`, `DocsViewer.razor`, `wwwroot/docs.css`, `wwwroot/docs.js` | The in-app `/docs` viewer for the game's `docs/brain` Markdown, with formulas (KaTeX) and diagrams (Mermaid) |
+| **Documentation** | `src/GameShell/Docs/BrainDocs.cs`, `DocsViewer.razor`, `wwwroot/docs.css`, `wwwroot/docs.js` | The in-app `/docs` viewer for the game's `docs` Markdown, with formulas (KaTeX) and diagrams (Mermaid) |
 
 ### Games (each a separate repository, GameShell as a git submodule)
 | Game | Web project | Game-specific parts |

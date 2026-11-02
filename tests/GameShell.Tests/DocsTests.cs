@@ -30,7 +30,7 @@ internal static class DocsFixture
     public const string Evaluation = """
         # 05 – Evaluation
 
-        See [threats](#threats), the [overview](01-overview.md), the [code](../../src/Evaluator.cs),
+        See [threats](#threats), the [overview](01-overview.md), the [code](../src/Evaluator.cs),
         the [README](README.md), a ![diagram](images/eval.png), the [old version](archive/05-evaluation.md#edges)
         and [GitHub](https://github.com).
 
@@ -39,15 +39,15 @@ internal static class DocsFixture
 
     public static Dictionary<string, string> Files() => new()
     {
-        ["content/brain/README.md"] = Readme,
-        ["content/brain/01-overview.md"] = "# 01 – Overview\n\nHello.",
-        ["content/brain/05-evaluation.md"] = Evaluation,
-        ["content/brain/appendix-a-engine-comparison-report.md"] = "No heading here.",
+        ["content/docs/README.md"] = Readme,
+        ["content/docs/01-overview.md"] = "# 01 – Overview\n\nHello.",
+        ["content/docs/05-evaluation.md"] = Evaluation,
+        ["content/docs/appendix-a-engine-comparison-report.md"] = "No heading here.",
     };
 
     public static BrainDocs Create(FakeFiles files) => new(
         new HttpClient(files) { BaseAddress = new Uri("https://game.test/") },
-        new BrainDocsOptions("The Test brain", "Test", new Uri("https://github.com/cjp-dev/Test/blob/main/docs/brain/")));
+        new BrainDocsOptions("The Test brain", "Test", new Uri("https://github.com/cjp-dev/Test/blob/main/docs/")));
 }
 
 public sealed class BrainDocsTests
@@ -74,10 +74,10 @@ public sealed class BrainDocsTests
         Assert.Contains("href=\"docs/01-overview\"", page.Html);
         Assert.Contains("href=\"https://github.com/cjp-dev/Test/blob/main/src/Evaluator.cs\"", page.Html);
         Assert.Contains("href=\"docs\"", page.Html);
-        Assert.Contains("src=\"content/brain/images/eval.png\"", page.Html);
+        Assert.Contains("src=\"content/docs/images/eval.png\"", page.Html);
         Assert.Contains("href=\"https://github.com\" target=\"_blank\" rel=\"noopener\"", page.Html);
         Assert.Contains(
-            "href=\"https://github.com/cjp-dev/Test/blob/main/docs/brain/archive/05-evaluation.md#edges\" target=\"_blank\" rel=\"noopener\"",
+            "href=\"https://github.com/cjp-dev/Test/blob/main/docs/archive/05-evaluation.md#edges\" target=\"_blank\" rel=\"noopener\"",
             page.Html);
         Assert.Contains("id=\"threats\"", page.Html);
     }
@@ -86,7 +86,7 @@ public sealed class BrainDocsTests
     public async Task Formula_InAHeading_KeepsItsBraces()
     {
         var files = DocsFixture.Files();
-        files["content/brain/01-overview.md"] = "# 01 – Overview\n\n### Natural Feel Delay ($250\\text{ ms}$)\n\nText {#not-an-id}";
+        files["content/docs/01-overview.md"] = "# 01 – Overview\n\n### Natural Feel Delay ($250\\text{ ms}$)\n\nText {#not-an-id}";
         DocsPage page = (await DocsFixture.Create(new FakeFiles(files)).GetPageAsync("01-overview"))!;
 
         Assert.Contains("250\\text{ ms}", page.Html);
@@ -106,7 +106,7 @@ public sealed class BrainDocsTests
     public async Task UnknownChapter_IsNotFetched()
     {
         Assert.Null(await DocsFixture.Create(_files).GetPageAsync("99-secret"));
-        Assert.DoesNotContain("content/brain/99-secret.md", _files.Requested);
+        Assert.DoesNotContain("content/docs/99-secret.md", _files.Requested);
     }
 
     [Fact]
@@ -121,7 +121,7 @@ public sealed class BrainDocsTests
     {
         ServiceProvider services = new ServiceCollection()
             .AddSingleton(new HttpClient(_files) { BaseAddress = new Uri("https://game.test/") })
-            .AddBrainDocs("The Test brain", "Test", "https://github.com/cjp-dev/Test/blob/main/docs/brain/")
+            .AddBrainDocs("The Test brain", "Test", "https://github.com/cjp-dev/Test/blob/main/docs/")
             .BuildServiceProvider();
 
         BrainDocs docs = services.GetRequiredService<BrainDocs>();

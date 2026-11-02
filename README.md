@@ -19,7 +19,7 @@ The GUI is described in [docs/general-game-gui-specification.md](docs/general-ga
 | `gameshell.css` | The shared look (served as `_content/GameShell/gameshell.css`) |
 | `gameshell.js` | Shortcut listener, menu alignment, history scrolling, text file open and download (`_content/GameShell/gameshell.js`) |
 | `ShellDialogs`, `DialogHost` | Modal dialogs one at a time: title, message, About picture, text box, buttons (first = Enter, last = Escape), and a `Body` slot for the game's own content such as its Settings form |
-| `DocsViewer`, `BrainDocs` | The in-app documentation: the game's `docs/brain` Markdown (README as front page, chapters from its links) with contents, previous/next links, formulas and diagrams |
+| `DocsViewer`, `BrainDocs` | The in-app documentation: the game's `docs` Markdown (README as front page, chapters from its links) with contents, previous/next links, formulas and diagrams |
 | `docs.css`, `docs.js` | The documentation's look and its KaTeX/Mermaid rendering (`_content/GameShell/docs.css`, loaded by `DocsViewer`) |
 
 Each game keeps its own board, menus, Settings form and dialog service, engine and view models. The view models live in the game's
@@ -92,7 +92,7 @@ Register the docs in `Program.cs` (after the `HttpClient`), route to the viewer 
 stylesheet in `index.html` (`<link rel="stylesheet" href="_content/GameShell/docs.css" />`):
 
 ```csharp
-builder.Services.AddBrainDocs("The Connect 4 brain", "Connect 4", "https://github.com/cjp-dev/Connect-4/blob/main/docs/brain/");
+builder.Services.AddBrainDocs("The Connect 4 brain", "Connect 4", "https://github.com/cjp-dev/Connect-4/blob/main/docs/");
 ```
 
 ```razor
@@ -107,9 +107,9 @@ builder.Services.AddBrainDocs("The Connect 4 brain", "Connect 4", "https://githu
 }
 ```
 
-The game's build copies `docs/brain` to `wwwroot/content/brain`, where `BrainDocs` reads it. Links to chapters and the
+The game's build copies `docs` to `wwwroot/content/docs`, where `BrainDocs` reads it. Links to chapters and the
 README stay in the viewer; links to other files in the repository (`../…`) and to Markdown in subfolders of
-`docs/brain` (for example an archive) open on GitHub. Menu items open a chapter
+`docs` (for example an archive) open on GitHub. Menu items open a chapter
 with `BrainDocs.PageRoute("13-gui-and-settings")`.
 
 ### Styles

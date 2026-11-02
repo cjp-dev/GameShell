@@ -9,13 +9,13 @@ using Markdig.Syntax.Inlines;
 namespace GameShell;
 
 /// <summary>
-/// The brain documentation (docs/brain, copied to wwwroot/content/brain by the game's build) as HTML. The README is
+/// The game's documentation (docs, copied to wwwroot/content/docs by the game's build) as HTML. The README is
 /// the front page, and its links to the chapter files give the chapters and their names.
 /// Register it with <see cref="DocsServiceCollectionExtensions.AddBrainDocs"/>.
 /// </summary>
 public sealed partial class BrainDocs(HttpClient http, BrainDocsOptions options)
 {
-    private const string ContentPath = "content/brain/";
+    private const string ContentPath = "content/docs/";
     private const string Route = "docs";
 
     // GitHub heading ids, so links such as "05-evaluation.md#threats" work; the docs have no raw HTML.
@@ -143,14 +143,14 @@ public sealed partial class BrainDocs(HttpClient http, BrainDocsOptions options)
         if (path.StartsWith("../", StringComparison.Ordinal))
         {
             external = true;
-            // Links from docs/brain to other files in the repository open them on GitHub.
+            // Links from docs to other files in the repository open them on GitHub.
             return new Uri(options.RepositoryFolder, url).AbsoluteUri;
         }
 
         if (!image && path.Contains('/') && path.EndsWith(".md", StringComparison.OrdinalIgnoreCase))
         {
             external = true;
-            // Markdown in a subfolder of docs/brain (for example an archive of older documents) is not a chapter
+            // Markdown in a subfolder of docs (for example an archive of older documents) is not a chapter
             // of the viewer: it opens on GitHub, which renders it.
             return new Uri(options.RepositoryFolder, url).AbsoluteUri;
         }
@@ -196,5 +196,5 @@ public sealed record DocsPage(string Slug, string Title, string Html);
 /// <summary>What the documentation is called and where its repository is.</summary>
 /// <param name="Title">The documentation's name, e.g. "The Connect 4 brain".</param>
 /// <param name="GameName">The game's name for the "Play ..." link, e.g. "Connect 4".</param>
-/// <param name="RepositoryFolder">The docs/brain folder on GitHub, for links to other files in the repository.</param>
+/// <param name="RepositoryFolder">The docs folder on GitHub, for links to other files in the repository.</param>
 public sealed record BrainDocsOptions(string Title, string GameName, Uri RepositoryFolder);
