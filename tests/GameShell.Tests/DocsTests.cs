@@ -31,7 +31,8 @@ internal static class DocsFixture
         # 05 – Evaluation
 
         See [threats](#threats), the [overview](01-overview.md), the [code](../../src/Evaluator.cs),
-        the [README](README.md), a ![diagram](images/eval.png) and [GitHub](https://github.com).
+        the [README](README.md), a ![diagram](images/eval.png), the [old version](archive/05-evaluation.md#edges)
+        and [GitHub](https://github.com).
 
         ## Threats
         """;
@@ -75,6 +76,9 @@ public sealed class BrainDocsTests
         Assert.Contains("href=\"docs\"", page.Html);
         Assert.Contains("src=\"content/brain/images/eval.png\"", page.Html);
         Assert.Contains("href=\"https://github.com\" target=\"_blank\" rel=\"noopener\"", page.Html);
+        Assert.Contains(
+            "href=\"https://github.com/cjp-dev/Test/blob/main/docs/brain/archive/05-evaluation.md#edges\" target=\"_blank\" rel=\"noopener\"",
+            page.Html);
         Assert.Contains("id=\"threats\"", page.Html);
     }
 

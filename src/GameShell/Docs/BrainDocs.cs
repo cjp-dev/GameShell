@@ -147,6 +147,14 @@ public sealed partial class BrainDocs(HttpClient http, BrainDocsOptions options)
             return new Uri(options.RepositoryFolder, url).AbsoluteUri;
         }
 
+        if (!image && path.Contains('/') && path.EndsWith(".md", StringComparison.OrdinalIgnoreCase))
+        {
+            external = true;
+            // Markdown in a subfolder of docs/brain (for example an archive of older documents) is not a chapter
+            // of the viewer: it opens on GitHub, which renders it.
+            return new Uri(options.RepositoryFolder, url).AbsoluteUri;
+        }
+
         if (!image && ChapterFile().Match(path) is { Success: true } chapter)
         {
             return PageRoute(chapter.Groups[1].Value) + fragment;

@@ -107,7 +107,9 @@ builder.Services.AddBrainDocs("The Connect 4 brain", "Connect 4", "https://githu
 }
 ```
 
-The game's build copies `docs/brain` to `wwwroot/content/brain`, where `BrainDocs` reads it. Menu items open a chapter
+The game's build copies `docs/brain` to `wwwroot/content/brain`, where `BrainDocs` reads it. Links to chapters and the
+README stay in the viewer; links to other files in the repository (`../…`) and to Markdown in subfolders of
+`docs/brain` (for example an archive) open on GitHub. Menu items open a chapter
 with `BrainDocs.PageRoute("13-gui-and-settings")`.
 
 ### Styles
