@@ -95,6 +95,39 @@ public sealed class BrainDocsTests
     }
 
     [Fact]
+    public async Task Formula_InAHeading_GivesGitHubsId()
+    {
+        // Headings from Gomoku's docs, with the ids GitHub gives them.
+        var files = DocsFixture.Files();
+        files["content/docs/01-overview.md"] = """
+            # 01 – Overview
+
+            See [the progression](#why-single-ply-progression-d-leftarrow-d--1).
+
+            ### Why Single-Ply Progression ($d \leftarrow d + 1$)?
+
+            ### 3. Why the Engine Beats the Knuth-Moore Bound ($b_{\text{eff}} < \sqrt{B_{\text{cand}}}$)
+
+            ### 4. The Older $5 \times 5$ Path (`DilateRow` & `GetCandidateMask`)
+
+            ## The Dihedral Group $D_4$ symmetries
+
+            ## The Dihedral Group $D_4$ symmetries
+
+            ## Plain heading
+            """;
+        DocsPage page = (await DocsFixture.Create(new FakeFiles(files)).GetPageAsync("01-overview"))!;
+
+        Assert.Contains("id=\"why-single-ply-progression-d-leftarrow-d--1\"", page.Html);
+        Assert.Contains("id=\"3-why-the-engine-beats-the-knuth-moore-bound-b_texteff--sqrtb_textcand\"", page.Html);
+        Assert.Contains("id=\"4-the-older-5-times-5-path-dilaterow--getcandidatemask\"", page.Html);
+        Assert.Contains("id=\"the-dihedral-group-d_4-symmetries\"", page.Html);
+        Assert.Contains("id=\"the-dihedral-group-d_4-symmetries-1\"", page.Html);
+        Assert.Contains("id=\"plain-heading\"", page.Html);
+        Assert.Contains("href=\"docs/01-overview#why-single-ply-progression-d-leftarrow-d--1\"", page.Html);
+    }
+
+    [Fact]
     public async Task Page_WithoutHeading_IsNamedAfterTheDocs()
     {
         DocsPage page = (await DocsFixture.Create(_files).GetPageAsync("appendix-a-engine-comparison-report"))!;

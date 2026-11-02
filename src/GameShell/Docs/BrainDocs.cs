@@ -1,7 +1,10 @@
+using System.Text;
 using System.Text.RegularExpressions;
 using Markdig;
 using Markdig.Extensions.AutoIdentifiers;
 using Markdig.Extensions.GenericAttributes;
+using Markdig.Extensions.Mathematics;
+using Markdig.Helpers;
 using Markdig.Renderers.Html;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
@@ -96,11 +99,59 @@ public sealed partial class BrainDocs(HttpClient http, BrainDocsOptions options)
     {
         string markdown = slug.Length == 0 ? await ReadmeAsync() : await http.GetStringAsync($"{ContentPath}{slug}.md");
         MarkdownDocument document = Markdown.Parse(markdown, Pipeline);
+        UseGitHubIdsForFormulaHeadings(document);
         RewriteLinks(document, slug);
         string title = document.Descendants<HeadingBlock>().FirstOrDefault(heading => heading.Level == 1)?.Inline is { } heading
             ? PlainText(heading)
             : options.Title;
         return new DocsPage(slug, title, document.ToHtml(Pipeline));
+    }
+
+    // Markdig leaves a formula out of a heading's id, but GitHub keeps its TeX source without the punctuation:
+    // "### Why Single-Ply Progression ($d \leftarrow d + 1$)?" is "why-single-ply-progression-d-leftarrow-d--1" there.
+    // Headings with a formula get GitHub's id, so links written for GitHub work in the viewer too.
+    private static void UseGitHubIdsForFormulaHeadings(MarkdownDocument document)
+    {
+        List<HeadingBlock> headings = document.Descendants<HeadingBlock>().ToList();
+        static bool HasFormula(HeadingBlock heading) => heading.Inline?.Descendants<MathInline>().Any() == true;
+        if (!headings.Any(HasFormula))
+        {
+            return;
+        }
+
+        var used = new HashSet<string>(headings.Where(heading => !HasFormula(heading))
+            .Select(heading => heading.GetAttributes().Id).OfType<string>());
+        foreach (HeadingBlock heading in headings.Where(HasFormula))
+        {
+            string id = LinkHelper.UrilizeAsGfm(HeadingSource(heading.Inline!));
+            string unique = id;
+            for (int n = 1; !used.Add(unique); n++)
+            {
+                unique = $"{id}-{n}";
+            }
+
+            heading.GetAttributes().Id = unique;
+        }
+    }
+
+    private static string HeadingSource(ContainerInline container)
+    {
+        var text = new StringBuilder();
+        foreach (Inline inline in container)
+        {
+            text.Append(inline switch
+            {
+                MathInline math => math.Content.ToString(),
+                LiteralInline literal => literal.Content.ToString(),
+                CodeInline code => code.Content,
+                HtmlEntityInline entity => entity.Transcoded.ToString(),
+                LineBreakInline => " ",
+                ContainerInline child => HeadingSource(child),
+                _ => "",
+            });
+        }
+
+        return text.ToString();
     }
 
     private void RewriteLinks(MarkdownDocument document, string slug)
